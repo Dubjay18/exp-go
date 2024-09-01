@@ -15,10 +15,11 @@ import (
 
 // Service represents a service that interacts with a database.
 type Service interface {
+	Getpdb() *gorm.DB
 }
 
 type service struct {
-	db *gorm.DB
+	Pdb *gorm.DB
 }
 
 var (
@@ -61,9 +62,12 @@ func New() Service {
 		DB_MIGRATOR = db.Migrator()
 	}
 	dbInstance = &service{
-		db: db,
+		Pdb: db,
 	}
 	return dbInstance
+}
+func (s *service) Getpdb() *gorm.DB {
+	return s.Pdb
 }
 
 // Health checks the health of the database connection by pinging the database.
