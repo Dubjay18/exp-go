@@ -1,6 +1,7 @@
 package server
 
 import (
+	"exp-go/internal/middlewares"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,8 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
+
+	r.Use(middlewares.ErrorHandlingMiddleware())
 
 	r.GET("/", s.HelloWorldHandler)
 
