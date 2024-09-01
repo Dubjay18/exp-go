@@ -30,6 +30,7 @@ func (user *User) CheckPassword(providedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providedPassword))
 }
 
+// Create
 func (user *User) Create(db *gorm.DB) error {
 	err := postgresql.CreateOneRecord(db, user)
 	if err != nil {

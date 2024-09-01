@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"exp-go/internal/database"
 	"exp-go/internal/models"
-
 	"github.com/pressly/goose/v3"
 )
 
