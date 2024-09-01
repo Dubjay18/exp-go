@@ -1,14 +1,16 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
+	"os"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	lg "gorm.io/gorm/logger"
-	"log"
-	"os"
 )
 
 // Service represents a service that interacts with a database.
@@ -27,6 +29,9 @@ var (
 	host       = os.Getenv("DB_HOST")
 	dbInstance *service
 )
+var GORM_DB *gorm.DB
+var SQL_DB *sql.DB
+var DB_MIGRATOR gorm.Migrator
 
 func New() Service {
 	// Reuse Connection
@@ -49,6 +54,11 @@ func New() Service {
 	})
 	if err != nil {
 		log.Fatal(err)
+	}
+	if err == nil {
+		GORM_DB = db
+		SQL_DB, _ = db.DB()
+		DB_MIGRATOR = db.Migrator()
 	}
 	dbInstance = &service{
 		db: db,

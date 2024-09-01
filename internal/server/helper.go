@@ -30,3 +30,7 @@ func InvalidRequestData(errs map[string]string) APIError {
 func InvalidJSON() APIError {
 	return *NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid json"))
 }
+
+//TODO: set up goose for migrations
+//TODO: set up gin for routes
+//TODO: set up make decorators for routes

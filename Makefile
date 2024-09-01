@@ -1,5 +1,14 @@
 # Simple Makefile for a Go project
+MIGRATION_DIR = migrations
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
 
+# Use environment variables for DB_DRIVER and DB_DSN
+DB_DRIVER = postgres
+DB_DSN = $(GOOSE_DBSTRING)
+GOOSE_CMD = goose -dir $(MIGRATION_DIR)
 # Build the application
 all: build
 
@@ -11,6 +20,9 @@ build:
 # Run the application
 run:
 	@go run cmd/api/main.go
+
+source-goose:
+	@bash -c 'source env/goose.env'
 
 # Create DB container
 docker-run:
@@ -56,5 +68,14 @@ watch:
 	        exit 1; \
 	    fi; \
 	fi
+	
+db-status:
+	@DB_DRIVER=$(DB_DRIVER) DB_DSN="$(DB_DSN)" $(GOOSE_CMD) status
+migrate:
+	@DB_DRIVER=$(DB_DRIVER) DB_DSN="$(DB_DSN)" $(GOOSE_CMD) up
+
+# Rollback the last migration
+rollback:
+	@DB_DRIVER=$(DB_DRIVER) DB_DSN="$(DB_DSN)" $(GOOSE_CMD) down
 
 .PHONY: all build run test clean
