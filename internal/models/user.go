@@ -6,10 +6,11 @@ import (
 )
 
 type User struct {
-	gorm.Model
+	ID string `gorm:"primaryKey" json:"id"`
 	Username string `gorm:"uniqueIndex;not null" json:"username"`
 	Password string `gorm:"not null" json:"-"`
 	Email    string `gorm:"uniqueIndex;not null" json:"email"`
+	gorm.Model
 }
 
 // HashPassword hashes the user's password
