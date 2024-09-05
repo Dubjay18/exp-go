@@ -2,9 +2,8 @@ package server
 
 import (
 	"exp-go/internal/middlewares"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -13,6 +12,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Use(middlewares.ErrorHandlingMiddleware())
 
 	r.GET("/", s.HelloWorldHandler)
+	apiVersion := r.Group("api/v1/")
+	user := apiVersion.Group("user")
+	{
+		user.POST("/register", s.UserController.UserRegistration)
+	}
 
 	return r
 }

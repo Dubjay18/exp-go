@@ -1,6 +1,7 @@
 package services
 
 import (
+	"exp-go/internal/dto"
 	"exp-go/internal/models"
 	"exp-go/internal/repositories"
 	"exp-go/internal/utils"
@@ -9,14 +10,14 @@ import (
 )
 
 type UserService interface {
-	RegisterUser(c *gin.Context, req *utils.RegisterUserRequest) (interface{}, error)
+	RegisterUser(c *gin.Context, req *utils.RegisterUserRequest) (*dto.RegisterUserResponse, error)
 }
 
 type DefaultUserService struct {
 	repo repositories.UserRepository
 }
 
-func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUserRequest) (interface{}, error) {
+func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUserRequest) (*dto.RegisterUserResponse, error) {
 	user := models.User{
 		Username: req.Username,
 		Password: req.Password,
@@ -31,7 +32,11 @@ func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUse
 		return nil, err
 	}
 
-	return user, nil
+	return &dto.RegisterUserResponse{
+		Username: user.Username,
+		Email:    user.Email,
+		ID:       user.ID,
+	}, nil
 }
 
 func NewUserService(repo repositories.UserRepository) UserService {
