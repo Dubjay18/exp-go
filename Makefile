@@ -76,6 +76,6 @@ migrate:
 
 # Rollback the last migration
 rollback:
-	@DB_DRIVER=$(DB_DRIVER) DB_DSN="$(DB_DSN)" $(GOOSE_CMD) down
+	./goose-custom down
 
 .PHONY: all build run test clean

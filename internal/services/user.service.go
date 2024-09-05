@@ -23,6 +23,7 @@ func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUse
 		Password: req.Password,
 		Email:    req.Email,
 	}
+
 	if err := user.HashPassword(req.Password); err != nil {
 		return nil, err
 	}
@@ -31,11 +32,11 @@ func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUse
 	if err != nil {
 		return nil, err
 	}
+	token := utils.GenerateJWT(user.ID, user.Username)
 
 	return &dto.RegisterUserResponse{
-		Username: user.Username,
-		Email:    user.Email,
-		ID:       user.ID,
+		Message: "User registered successfully",
+		Token:   token,
 	}, nil
 }
 

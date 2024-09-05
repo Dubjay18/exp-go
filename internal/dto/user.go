@@ -8,6 +8,8 @@ type RegisterUserRequest struct {
 }
 
 type RegisterUserResponse struct {
+	Message  string `json:"message"`
+	Token    string `json:"token"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	ID       string `json:"id"`
