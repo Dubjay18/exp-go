@@ -9,6 +9,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(user *models.User) error
+	GetUserByUsername(username string) (*models.User, error)
 }
 
 type DefaultUserRepository struct {
@@ -24,6 +25,15 @@ func (r *DefaultUserRepository) CreateUser(user *models.User) error {
 		return err
 	}
 	return nil
+}
+
+func (r *DefaultUserRepository) GetUserByUsername(username string) (*models.User, error) {
+	user := &models.User{}
+	err := user.GetByUsername(r.db.Getpdb(), username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func NewUserRepository(service database.Service) UserRepository {

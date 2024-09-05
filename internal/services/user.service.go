@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"exp-go/internal/dto"
 	"exp-go/internal/models"
 	"exp-go/internal/repositories"
@@ -11,6 +12,7 @@ import (
 
 type UserService interface {
 	RegisterUser(c *gin.Context, req *utils.RegisterUserRequest) (*dto.RegisterUserResponse, error)
+	Login(c *gin.Context, req *dto.LoginRequest) (*dto.LoginResponse, error)
 }
 
 type DefaultUserService struct {
@@ -36,6 +38,21 @@ func (s *DefaultUserService) RegisterUser(c *gin.Context, req *utils.RegisterUse
 
 	return &dto.RegisterUserResponse{
 		Message: "User registered successfully",
+		Token:   token,
+	}, nil
+}
+
+func (s *DefaultUserService) Login(c *gin.Context, req *dto.LoginRequest) (*dto.LoginResponse, error) {
+	user, err := s.repo.GetUserByUsername(req.Username)
+	if err != nil {
+		return nil, err
+	}
+	if !user.CheckPassword(req.Password) {
+		return nil, errors.New("invalid Credentials")
+	}
+	token := utils.GenerateJWT(user.ID, user.Username)
+	return &dto.LoginResponse{
+		Message: "User logged in successfully",
 		Token:   token,
 	}, nil
 }

@@ -16,6 +16,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	user := apiVersion.Group("user")
 	{
 		user.POST("/register", s.UserController.UserRegistration)
+		user.POST("/login", s.UserController.UserLogin)
 	}
 
 	return r

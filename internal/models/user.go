@@ -26,13 +26,22 @@ func (user *User) HashPassword(password string) error {
 }
 
 // CheckPassword checks if the provided password matches the stored password
-func (user *User) CheckPassword(providedPassword string) error {
-	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providedPassword))
+func (user *User) CheckPassword(providedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providedPassword))
+	return err == nil
 }
 
 // Create
 func (user *User) Create(db *gorm.DB) error {
 	err := postgresql.CreateOneRecord(db, user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user *User) GetByUsername(db *gorm.DB, username string) error {
+	_, err := postgresql.SelectOneFromDb(db, user, "username = ?", username)
 	if err != nil {
 		return err
 	}
