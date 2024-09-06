@@ -4,9 +4,11 @@ import (
 	"exp-go/internal/dto"
 	"exp-go/internal/services"
 	"exp-go/internal/utils"
+	"log"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"net/http"
 )
 
 type ExpenseController struct {
@@ -21,6 +23,8 @@ func NewExpenseController(service services.ExpenseService, Validator *validator.
 // AddExpense adds a new expense
 func (e *ExpenseController) AddExpense(c *gin.Context) {
 	var req dto.AddExpenseRequest
+	log.Println("Service is nil:", e.service == nil)
+	log.Println("Request Data:", req)
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.InvalidRequestData(c, utils.ParseValidationErrors(err))
 		return
@@ -30,6 +34,7 @@ func (e *ExpenseController) AddExpense(c *gin.Context) {
 		utils.InvalidRequestData(c, utils.ParseValidationErrors(err))
 		return
 	}
+
 	resp, err := e.service.AddExpense(c, req)
 	if err != nil {
 		utils.NewErrorResponse(c, http.StatusBadRequest, err.Error())

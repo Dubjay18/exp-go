@@ -76,6 +76,6 @@ migrate:
 
 # Rollback the last migration
 rollback:
-	./goose-custom down
+	@go run cmd/api/main.go --down
 
 .PHONY: all build run test clean

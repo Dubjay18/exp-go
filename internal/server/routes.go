@@ -19,7 +19,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		user.POST("/login", s.UserController.UserLogin)
 	}
 
-	expense := apiVersion.Group("expense", middlewares.AuthMiddleware())
+	expense := apiVersion.Group("expense")
+	expense.Use(middlewares.AuthMiddleware())
 	{
 		expense.POST("/add", s.ExpenseController.AddExpense)
 	}

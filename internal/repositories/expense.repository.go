@@ -7,16 +7,19 @@ import (
 
 type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
+	GetExpenseByID() error
+	GetExpensesByUserID() error
+	UpdateExpense() error
+	DeleteExpense() error
+	GetTotalExpenses() error
+	GetTotalExpensesByCategory() error
+	GetTotalExpensesByDate() error
+	GetTotalExpensesByMonth() error
+	GetTotalExpensesByYear() error
 }
 
 type DefaultExpenseRepository struct {
 	db database.Service
-}
-
-func NewExpenseRepository(service database.Service) ExpenseRepository {
-	return &DefaultExpenseRepository{
-		db: service,
-	}
 }
 
 // CreateExpense creates a new expense
@@ -71,4 +74,10 @@ func (r *DefaultExpenseRepository) GetTotalExpensesByMonth() error {
 // GetTotalExpensesByYear gets the total expenses of a user by year
 func (r *DefaultExpenseRepository) GetTotalExpensesByYear() error {
 	return nil
+}
+
+func NewExpenseRepository(service database.Service) ExpenseRepository {
+	return &DefaultExpenseRepository{
+		db: service,
+	}
 }

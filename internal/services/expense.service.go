@@ -7,6 +7,7 @@ import (
 	"exp-go/internal/repositories"
 	"exp-go/internal/utils"
 	"fmt"
+
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,9 @@ type DefaultExpenseService struct {
 }
 
 func NewExpenseService(repo repositories.ExpenseRepository) ExpenseService {
-	return &DefaultExpenseService{}
+	return &DefaultExpenseService{
+		repo: repo,
+	}
 }
 
 // CreateExpense creates a new expense
@@ -43,7 +46,7 @@ func (s *DefaultExpenseService) AddExpense(c *gin.Context, req dto.AddExpenseReq
 		return nil, errors.New("user claims not found")
 	}
 	userID := claimsMap.UserID
-	fmt.Println(userID)
+
 	expense := models.Expense{
 		UserID:   userID,
 		Amount:   req.Amount,

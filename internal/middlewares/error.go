@@ -4,6 +4,7 @@ import (
 	"exp-go/internal/utils"
 	"log"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ func ErrorHandlingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Println(err)
+				log.Printf("Panic recovered: %v\nStack trace:\n%s\n", err, debug.Stack())
 				utils.NewErrorResponse(c, http.StatusInternalServerError, "Internal Server Error")
 			}
 		}()
