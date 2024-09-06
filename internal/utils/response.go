@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -91,12 +93,14 @@ func TranslateError(err error) (errTxt string) {
 }
 
 func ParseValidationErrors(err error) map[string]string {
+	fmt.Println(err)
 	errors := make(map[string]string)
-
+	fmt.Println(reflect.TypeOf(err))
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, vErr := range validationErrors {
 			field := strings.ToLower(vErr.Field())
 			tag := vErr.Tag()
+			fmt.Println(tag)
 
 			// Customizing the error message based on the tag
 			switch tag {
@@ -116,6 +120,9 @@ func ParseValidationErrors(err error) map[string]string {
 				errors[field] = "Validation error"
 			}
 		}
+	}
+	if jsonErrors, ok := err.(*json.UnmarshalTypeError); ok {
+		errors[jsonErrors.Field] = "Invalid type. Expected " + jsonErrors.Type.String()
 	}
 
 	return errors

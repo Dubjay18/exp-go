@@ -5,6 +5,8 @@ import (
 	"exp-go/internal/dto"
 	"exp-go/internal/models"
 	"exp-go/internal/repositories"
+	"exp-go/internal/utils"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -32,18 +34,16 @@ func (s *DefaultExpenseService) AddExpense(c *gin.Context, req dto.AddExpenseReq
 		date = time.Now()
 	}
 	claims, _ := c.Get("claims")
+	fmt.Println(claims)
 	if claims == nil {
 		return nil, errors.New("user claims not found")
 	}
-	claimsMap, ok := claims.(map[string]interface{})
+	claimsMap, ok := claims.(*utils.Claims)
 	if !ok {
 		return nil, errors.New("user claims not found")
 	}
-	userID, ok := claimsMap["userID"].(string)
-	if !ok {
-		return nil, errors.New("user claims not found")
-	}
-
+	userID := claimsMap.UserID
+	fmt.Println(userID)
 	expense := models.Expense{
 		UserID:   userID,
 		Amount:   req.Amount,

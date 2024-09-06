@@ -17,22 +17,31 @@ import (
 )
 
 type Server struct {
-	port           int
-	db             database.Service
-	UserController controller.UserController
+	port              int
+	db                database.Service
+	UserController    controller.UserController
+	ExpenseController controller.ExpenseController
 }
 
 func NewServer() *http.Server {
 	validator := validator.New()
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	dbInstance := database.New()
+	// user
 	userRepo := repositories.NewUserRepository(dbInstance)
 	userService := services.NewUserService(userRepo)
 	userController := controller.NewUserController(userService, validator)
+	// expense
+	expenseRepo := repositories.NewExpenseRepository(dbInstance)
+	expenseService := services.NewExpenseService(expenseRepo)
+	expenseController := controller.NewExpenseController(expenseService, validator)
+
+	// Create a new server instance
 	NewServer := &Server{
-		port:           port,
-		UserController: userController,
-		db:             dbInstance,
+		port:              port,
+		UserController:    userController,
+		db:                dbInstance,
+		ExpenseController: expenseController,
 	}
 
 	// Declare Server config
