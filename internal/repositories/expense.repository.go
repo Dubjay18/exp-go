@@ -2,12 +2,13 @@ package repositories
 
 import (
 	"exp-go/internal/database"
+	"exp-go/internal/database/postgresql"
 	"exp-go/internal/models"
 )
 
 type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
-	GetExpenseByID() error
+	GetExpenseByID(id string) (*models.Expense, error)
 	GetExpensesByUserID() error
 	UpdateExpense() error
 	DeleteExpense() error
@@ -32,8 +33,14 @@ func (r *DefaultExpenseRepository) CreateExpense(expense *models.Expense) error 
 }
 
 // GetExpenseByID gets an expense by its ID
-func (r *DefaultExpenseRepository) GetExpenseByID() error {
-	return nil
+func (r *DefaultExpenseRepository) GetExpenseByID(id string) (*models.Expense, error) {
+	expense := &models.Expense{}
+	_, err := postgresql.SelectOneFromDb(r.db.Getpdb(), expense, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return expense, nil
 }
 
 // GetExpensesByUserID gets all expenses by a user's ID

@@ -16,6 +16,14 @@ type AddExpenseResponse struct {
 	Message string `json:"message"`
 }
 
+type GetExpenseResponse struct {
+	ID       uint    `json:"id"`
+	Amount   float64 `json:"amount"`
+	Category string  `json:"category"`
+	Note     string  `json:"note"`
+	Date     string  `json:"date"`
+}
+
 // ParseDate parses and validates the date
 func (input *AddExpenseRequest) ParseDate() (time.Time, error) {
 	const layout = "2006-01-02" // Defining the date format layout (YYYY-MM-DD)

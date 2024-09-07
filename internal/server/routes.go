@@ -23,6 +23,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	expense.Use(middlewares.AuthMiddleware())
 	{
 		expense.POST("/add", s.ExpenseController.AddExpense)
+		expense.GET("/:id", s.ExpenseController.GetExpense)
 	}
 
 	return r

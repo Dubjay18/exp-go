@@ -43,3 +43,13 @@ func (e *ExpenseController) AddExpense(c *gin.Context) {
 	utils.NewSuccessResponse(c, http.StatusCreated, resp)
 
 }
+
+func (e *ExpenseController) GetExpense(c *gin.Context) {
+	id := c.Param("id")
+	resp, err := e.service.GetExpense(c, id)
+	if err != nil {
+		utils.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	utils.NewSuccessResponse(c, http.StatusOK, resp)
+}

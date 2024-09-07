@@ -15,6 +15,7 @@ import (
 
 type ExpenseService interface {
 	AddExpense(c *gin.Context, req dto.AddExpenseRequest) (*dto.AddExpenseResponse, error)
+	GetExpense(c *gin.Context, id string) (*dto.GetExpenseResponse, error)
 }
 
 type DefaultExpenseService struct {
@@ -61,5 +62,20 @@ func (s *DefaultExpenseService) AddExpense(c *gin.Context, req dto.AddExpenseReq
 
 	return &dto.AddExpenseResponse{
 		Message: "Expense added successfully",
+	}, nil
+}
+
+func (s *DefaultExpenseService) GetExpense(c *gin.Context, id string) (*dto.GetExpenseResponse, error) {
+	expense, err := s.repo.GetExpenseByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.GetExpenseResponse{
+		ID:       expense.ID,
+		Amount:   expense.Amount,
+		Category: expense.Category,
+		Note:     expense.Note,
+		Date:     expense.Date.Format("2006-01-02"),
 	}, nil
 }
