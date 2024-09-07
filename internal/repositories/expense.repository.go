@@ -9,7 +9,7 @@ import (
 type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
 	GetExpenseByID(id string) (*models.Expense, error)
-	GetExpensesByUserID() error
+	GetExpensesByUserID(userId string) ([]models.Expense, error)
 	UpdateExpense() error
 	DeleteExpense() error
 	GetTotalExpenses() error
@@ -44,8 +44,13 @@ func (r *DefaultExpenseRepository) GetExpenseByID(id string) (*models.Expense, e
 }
 
 // GetExpensesByUserID gets all expenses by a user's ID
-func (r *DefaultExpenseRepository) GetExpensesByUserID() error {
-	return nil
+func (r *DefaultExpenseRepository) GetExpensesByUserID(userId string) ([]models.Expense, error) {
+	expenses := []models.Expense{}
+	err := postgresql.SelectAllFromDb(r.db.Getpdb(), "desc", expenses, userId)
+	if err != nil {
+		return nil, err
+	}
+	return expenses, nil
 }
 
 // UpdateExpense updates an expense

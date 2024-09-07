@@ -16,6 +16,7 @@ import (
 type ExpenseService interface {
 	AddExpense(c *gin.Context, req dto.AddExpenseRequest) (*dto.AddExpenseResponse, error)
 	GetExpense(c *gin.Context, id string) (*dto.GetExpenseResponse, error)
+	GetUserExpenses(c *gin.Context, id string) (*dto.GetUserExpensesResponse, error)
 }
 
 type DefaultExpenseService struct {
@@ -78,4 +79,24 @@ func (s *DefaultExpenseService) GetExpense(c *gin.Context, id string) (*dto.GetE
 		Note:     expense.Note,
 		Date:     expense.Date.Format("2006-01-02"),
 	}, nil
+}
+
+func (s *DefaultExpenseService) GetUserExpenses(c *gin.Context, id string) (*dto.GetUserExpensesResponse, error) {
+	expenses, err := s.repo.GetExpensesByUserID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var response dto.GetUserExpensesResponse
+	for _, expense := range expenses {
+		response.Expenses = append(response.Expenses, dto.GetExpenseResponse{
+			ID:       expense.ID,
+			Amount:   expense.Amount,
+			Category: expense.Category,
+			Note:     expense.Note,
+			Date:     expense.Date.Format("2006-01-02"),
+		})
+	}
+
+	return &response, nil
 }

@@ -4,11 +4,10 @@ import (
 	"exp-go/internal/dto"
 	"exp-go/internal/services"
 	"exp-go/internal/utils"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"log"
+	"net/http"
 )
 
 type ExpenseController struct {
@@ -47,6 +46,16 @@ func (e *ExpenseController) AddExpense(c *gin.Context) {
 func (e *ExpenseController) GetExpense(c *gin.Context) {
 	id := c.Param("id")
 	resp, err := e.service.GetExpense(c, id)
+	if err != nil {
+		utils.NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	utils.NewSuccessResponse(c, http.StatusOK, resp)
+}
+
+func (e *ExpenseController) GetUserExpenses(c *gin.Context) {
+	id := c.Param("id")
+	resp, err := e.service.GetUserExpenses(c, id)
 	if err != nil {
 		utils.NewErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
