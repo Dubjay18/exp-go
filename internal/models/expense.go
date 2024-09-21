@@ -33,3 +33,22 @@ func (expense *Expense) Create(db *gorm.DB) error {
 	}
 	return nil
 }
+
+//update
+
+func (expense *Expense) Update(db *gorm.DB) error {
+	err := db.Save(expense).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GEt
+func (expense *Expense) Get(db *gorm.DB) error {
+	err := db.First(expense, expense.ID).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

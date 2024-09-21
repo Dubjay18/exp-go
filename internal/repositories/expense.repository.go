@@ -10,13 +10,9 @@ type ExpenseRepository interface {
 	CreateExpense(expense *models.Expense) error
 	GetExpenseByID(id string) (*models.Expense, error)
 	GetExpensesByUserID(userId string) ([]models.Expense, error)
-	UpdateExpense() error
-	DeleteExpense() error
-	GetTotalExpenses() error
-	GetTotalExpensesByCategory() error
-	GetTotalExpensesByDate() error
-	GetTotalExpensesByMonth() error
-	GetTotalExpensesByYear() error
+	UpdateExpense(expense *models.Expense) error
+	DeleteExpense(id uint) error
+	GetTotalExpenses(filters map[string]interface{}) (float64, error)
 }
 
 type DefaultExpenseRepository struct {
@@ -46,7 +42,7 @@ func (r *DefaultExpenseRepository) GetExpenseByID(id string) (*models.Expense, e
 // GetExpensesByUserID gets all expenses by a user's ID
 func (r *DefaultExpenseRepository) GetExpensesByUserID(userId string) ([]models.Expense, error) {
 	expenses := []models.Expense{}
-	err := postgresql.SelectAllFromDb(r.db.Getpdb(), "desc", expenses, userId)
+	err := postgresql.SelectAllFromDb(r.db.Getpdb(), "desc", &expenses, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -54,38 +50,37 @@ func (r *DefaultExpenseRepository) GetExpensesByUserID(userId string) ([]models.
 }
 
 // UpdateExpense updates an expense
-func (r *DefaultExpenseRepository) UpdateExpense() error {
+func (r *DefaultExpenseRepository) UpdateExpense(expense *models.Expense) error {
+	err := expense.Update(r.db.Getpdb())
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // DeleteExpense deletes an expense
-func (r *DefaultExpenseRepository) DeleteExpense() error {
+func (r *DefaultExpenseRepository) DeleteExpense(id uint) error {
+	expense := &models.Expense{}
+	expense.ID = id
+	err := expense.Get(r.db.Getpdb())
+	if err != nil {
+		return err
+	}
+	err = postgresql.DeleteRecordFromDb(r.db.Getpdb(), expense)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// GetTotalExpenses gets the total expenses of a user
-func (r *DefaultExpenseRepository) GetTotalExpenses() error {
-	return nil
-}
-
-// GetTotalExpensesByCategory gets the total expenses of a user by category
-func (r *DefaultExpenseRepository) GetTotalExpensesByCategory() error {
-	return nil
-}
-
-// GetTotalExpensesByDate gets the total expenses of a user by date
-func (r *DefaultExpenseRepository) GetTotalExpensesByDate() error {
-	return nil
-}
-
-// GetTotalExpensesByMonth gets the total expenses of a user by month
-func (r *DefaultExpenseRepository) GetTotalExpensesByMonth() error {
-	return nil
-}
-
-// GetTotalExpensesByYear gets the total expenses of a user by year
-func (r *DefaultExpenseRepository) GetTotalExpensesByYear() error {
-	return nil
+func (r *DefaultExpenseRepository) GetTotalExpenses(filters map[string]interface{}) (float64, error) {
+	totalExpenses := 0.0
+	count, err := postgresql.CountSpecificRecords(r.db.Getpdb(), &models.Expense{}, filters)
+	if err != nil {
+		return 0, err
+	}
+	totalExpenses = float64(count)
+	return totalExpenses, nil
 }
 
 func NewExpenseRepository(service database.Service) ExpenseRepository {
